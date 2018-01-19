@@ -1,0 +1,35 @@
+{% load static %}
+<!-- begin TOP NAVIGATION -->
+<nav class="navbar-top" role="navigation">
+    <!-- begin BRAND HEADING -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle pull-right" data-toggle="collapse"
+                data-target=".sidebar-collapse">
+            <i class="fa fa-bars"></i> Menu
+        </button>
+        <a href="/">
+           <div class="navbar-brand" style="height: 50px; width: 100%; background-repeat: no-repeat;
+                background-size: contain; background-position: center;
+                background-image: url('{{ request.user.user_brand.brand.logo.url }}')">
+
+        </div>
+        </a>
+
+    </div>
+    <!-- end BRAND HEADING -->
+    <div class="nav-top">
+        <!-- begin LEFT SIDE WIDGETS -->
+        <ul class="nav navbar-left">
+            <li class="tooltip-sidebar-toggle">
+                <a href="#" id="sidebar-toggle" data-toggle="tooltip" data-placement="right" title="Sidebar Toggle">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </li>
+            <!-- You may add more widgets here using <li> -->
+        </ul>
+        <!-- end LEFT SIDE WIDGETS -->
+    </div>
+    <!-- /.nav-top -->
+</nav>
+<!-- /.navbar-top -->
+<!-- end TOP NAVIGATION -->

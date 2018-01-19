@@ -1,0 +1,360 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'user-details' brand %}">User Details</a></li>
+                            <li><a href="">Add User</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                {% if success_message %}
+                                    {{ success_message }}
+                                {% else %}
+                                    <form  enctype="multipart/form-data" id="AddCategoryForm" class="profileform" method="POST" action="{% if form_update %}{{ request.path_info }}{% else %}{% url 'add_user' brand %}{% endif %}">
+                                        {% csrf_token %}
+                                        <div class="col-lg-12" >
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="email">Email: *</label>
+                                                </div>
+                                                <div>
+                                                    {{ userbrand_form.email }}
+
+                                                    {% if userbrand_form.email.errors %}
+                                                        <div>
+                                                            {% for error in userbrand_form.email.errors %}
+                                                                <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <br>
+                                                <div class="form-group">
+                                                    <label for="first_name">First Name: *</label>
+                                                </div>
+                                                <div>
+                                                    {{ userbrand_form.first_name }}
+                                                    {% if userbrand_form.first_name.errors %}
+                                                        <div>
+                                                            {% for error in userbrand_form.first_name.errors %}
+                                                                <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <br>
+                                                <div class="form-group">
+                                                    <label for="last_name">Last Name: *</label>
+                                                </div>
+                                                <div>
+                                                    {{ userbrand_form.last_name }}
+                                                    {% if userbrand_form.last_name.errors %}
+                                                        <div>
+                                                            {% for error in userbrand_form.last_name.errors %}
+                                                                <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <br>
+                                                <div class="form-group">
+                                                    <label for="mobile_number">Mobile Number: *</label>
+                                                </div>
+                                                <div>
+                                                    {{ userbrand_form.mobile_number }}
+                                                    {% if userbrand_form.mobile_number.errors %}
+                                                        <div>
+                                                            {% for error in userbrand_form.mobile_number.errors %}
+                                                                <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+
+                                                <br>
+                                                <div class="form-group">
+                                                    <label for="group">Group: *</label>
+                                                </div>
+                                                <div id="group">
+                                                    {{ userbrand_form.group }}
+                                                </div>
+
+                                                <br>
+                                                <div class="form-group" id="unit_lable">
+                                                    <label for="unit">Plant: </label>
+                                                </div>
+                                                <div id="unit">
+                                                    {{ userbrand_form.unit }}
+                                                </div>
+
+                                                <br>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                        <label for="image_url" class="custom-block">Profile Image: </label>
+                                                        <div id="kv-avatar-errors" class="center-block">
+
+                                                        </div>
+                                                        <div class="kv-avatar userprofile-changedp-btn">
+                                                            {{ userbrand_form.image_url }}
+                                                            <div id="invalidimage"></div>
+                                                        </div>
+                                                </div>
+                                                <br>
+                                                <div id="machine_lable" class="form-group">
+                                                    <label for="machine">Machine: </label>
+
+                                                    <div id="machine_lable">
+                                                        <select class="btn btn-default" id="line_id" name="machine" multiple class="">
+                                                            <option value="">Select Machine</option>
+                                                            {% for d in machine_details %}
+                                                                <option value="{{ d.id }}"
+                                                                        {% if  d in user_machines%}
+                                                                        selected
+                                                                        {% endif %}>
+                                                                    {{ d.id }} - {{ d.name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    {% if userbrand_form.machine.errors %}
+                                                        <div>
+                                                            {% for error in userbrand_form.machine.errors %}
+                                                                <label class="error">{{ error }}</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <br>
+                                                <div class="form-group">
+                                                    <input id="user_id" name="user_id" type="hidden" value="{{ user_id }}">
+                                                </div>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <button type="submit" class="btn btn-default crete-user">SAVE</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <style>
+        .select-custom-style.bootstrap-select>.dropdown-toggle.bs-placeholder,
+        .select-custom-style.bootstrap-select>.dropdown-toggle.bs-placeholder:active {
+            color: #fff;
+        }
+        .custom-block {
+            display: block;
+        }
+        .userprofile-changedp-btn {
+            width: 200px;
+        }
+        .userprofile-changedp-btn .btn-primary {
+            color: #fff;
+            font-weight: 600;
+            background-color: #2879B1;
+            border-radius: .2vw;
+        }
+        .kv-avatar .file-preview-thumbnails, .kv-avatar .kv-file-content, .kv-avatar .file-input {
+            width: 100% !important;
+        }
+        .kv-avatar .file-preview-frame {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+    </style>
+{% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+{#            if (edit_form != "{{ edit_form }}"){#}
+                $("select#line_id option[value!='']")
+{#            }#}
+            $(".unit_select").selectpicker({
+                'maxOptions': false,
+            });
+            $("#line_idj").selectpicker({
+                'maxOptions': false,
+            });
+            $('.selectpicker').selectpicker();
+            if ($("#id_group").val() == '5'){
+                $('#unit').show();
+                $('#unit_lable').show();
+                $('#machine').hide();
+                $('#machine_lable').hide();
+                $(".unit_select").selectpicker({
+                    'maxOptions': false,
+                });
+                $("#id_unit").selectpicker('refresh');
+                $("#id_unit").prop('required',true);
+
+            }
+            else if($("#id_group").val() == '2'){
+                $('#unit').show();
+                $('#unit_lable').show();
+                $('#machine').show();
+                $('#machine_lable').show();
+                $("#id_machine").prop('required',true);
+                $("#id_unit").prop('required',true);
+                $(".unit_select").selectpicker({
+                    'maxOptions': 1,
+                });
+                $("#id_unit").selectpicker('refresh');
+
+            }
+            else{
+                $('#machine').hide();
+                $('#machine_lable').hide();
+                $('#unit').hide();
+                $('#unit_lable').hide();
+                $(".unit_select").selectpicker({
+                    'maxOptions': false,
+                });
+                $("#id_unit").selectpicker('refresh');
+            }
+            $("#group").change(function(){
+                if ($("#id_group").val() == '5'){
+                    $('#unit').show();
+                    $('#unit_lable').show();
+                    $('#id_unit').selectpicker('deselectAll');
+                    $("#id_unit").selectpicker('refresh');
+                    $('#machine').hide();
+                    $('#machine_lable').hide();
+                    $('#id_machine').selectpicker('deselectAll');
+                    $("#id_machine").selectpicker('refresh');
+                    $("#id_unit").prop('required',true);
+                    $("#id_machine").prop('required',false);
+                    $(".unit_select").selectpicker({
+                        'maxOptions': false,
+                    });
+                    $("#id_unit").selectpicker('refresh');
+                }
+                else if($("#id_group").val() == '2'){
+                    $('#unit').show();
+                    $('#unit_lable').show();
+                    $('#machine').show();
+                    $('#machine_lable').show();
+                    $("#id_machine").prop('required',true);
+                    $(".unit_select").selectpicker({
+                        'maxOptions': 1,
+                    });
+                    $('#id_machine').selectpicker('deselectAll');
+                    $("#id_machine").selectpicker('refresh');
+                    $("#id_unit").selectpicker('refresh');
+                    $("#id_unit").prop('required',true);
+
+                }
+                else{
+                    $('#machine').hide();
+                    $('#machine_lable').hide();
+                    $('#unit').hide();
+                    $('#unit_lable').hide();
+                    $("#id_machine").prop('required',false);
+                    $("#id_unit").prop('required',false);
+                    $(".unit_select").selectpicker({
+                        'maxOptions': false,
+                    });
+                    $('#id_unit').selectpicker('deselectAll');
+                    $("#id_unit").selectpicker('refresh');
+                    $('#id_machine').selectpicker('deselectAll');
+                    $("#id_machine").selectpicker('refresh');
+                }
+            });
+
+            $("#avatar").fileinput({
+                overwriteInitial: true,
+                showClose: false,
+                showCaption: false,
+                browseLabel: 'Change Avatar',
+                removeLabel: 'Delete',
+                browseIcon: '',
+                removeIcon: '',
+                removeTitle: 'Cancel or reset changes',
+                elErrorContainer: '#kv-avatar-errors',
+                msgErrorClass: 'alert alert-block alert-danger',
+                defaultPreviewContent: '<img src="{% if image_url %}{{ image_url }}{% else %}{% static 'img/profile-default.png' %}{% endif %}" style="width:185px;">',
+                layoutTemplates: {main2: '{preview} ' + ' {browse} {remove} '},
+                allowedFileExtensions: ["jpg", "png"]
+            });
+            $("#avatar").change(function () {
+                var fileUpload = $("#avatar")[0];
+                var avatar = $("#avatar");
+                var reader = new FileReader();
+                reader.readAsDataURL(fileUpload.files[0]);
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var height = this.height;
+                        var width = this.width;
+                        if (height < width) {
+                            var avatarsize = document.getElementById("invalidimage");
+                            avatarsize.textContent = "*The image you uploaded appears to be invalid! Kindly upload an image with its height greater than or equal to its width";
+                            avatar.replaceWith(avatar.val('').clone(true));
+                            return false;
+                        }
+                        else {
+                            var avatarsize = document.getElementById("invalidimage");
+                            avatarsize.textContent = "";
+                        };
+                    };
+                }
+            });
+            $("select#depot_id").change(function(){
+                $("select#line_id option[value!='']").remove();
+                var date = $("#id_date").val();
+                var depot = $(this).val();
+                var depot_code = parseInt(depot);
+                $.ajax({
+                    url : "{% url 'get_machine_details' brand %}",
+                    data : {"depot_code": depot_code},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.machine_items), function(i, v){
+                                $("select#line_id").append("<option value="+v.id+">"+v.no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#line_id option[value!='']").remove();
+                    }
+                });
+            });
+
+        });
+    </script>
+{% endblock extra_js %}

@@ -1,0 +1,255 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'user-details' brand %}">User Details</a></li>
+                            <li><a href="">Set User Permission</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                    <div class="portlet-title">
+                                <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <form  method="POST" action="/set-user-permission/">
+                                {% csrf_token %}
+                                <fieldset>
+                                    <label for="user">User:</label>
+                                    <select id="user" name="user" required>
+                                        <option value="">Select User</option>
+                                        {% for d in users %}
+                                            <option value="{{ d.username }}"
+                                                    {% if user_name == d.username %}
+                                                    selected
+                                                    {% endif %}>
+                                                {% if d.get_full_name %}
+                                                    {{ d.username }} - {{ d.get_full_name }}
+                                                {%  else %}
+                                                    {{ d.username }}
+                                                {% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </fieldset>
+                                <fieldset>
+                                    <label for="group">Groups:</label>
+                                    <select id="group" name="user_group" required>
+                                        <option value="">Select Group</option>
+                                        {% for d in groups %}
+                                            <option value="{{ d.name }}"
+                                                    {% if group_name == d.name %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </fieldset>
+                                <fieldset>
+                                    <label for="unit">Plant:</label>
+                                    <select id="unit" name="user_unit">
+                                        <option value="">Select Plant</option>
+                                        {% for d in units %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </fieldset>
+                                <fieldset>
+                                    <label for="machine">Machine:</label>
+                                    <select multiple id="line" name="user_machine">
+                                        <option value="">Select Machine</option>
+                                        {% for d in machines %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </fieldset>
+                                <button type="submit">Set Permission</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+
+
+        *, *:before, *:after {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+
+        form {
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: #f4f7f8;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="datetime"],
+        input[type="email"],
+        input[type="number"],
+        input[type="search"],
+        input[type="tel"],
+        input[type="time"],
+        input[type="url"],
+        textarea,
+        select {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            font-size: 16px;
+            height: auto;
+            margin: 0;
+            outline: 0;
+            padding: 15px;
+            width: 100%;
+            background-color: #e8eeef;
+            color: #8a97a0;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+            margin-bottom: 30px;
+        }
+
+
+        select {
+            padding: 6px;
+            height: 32px;
+            border-radius: 2px;
+        }
+
+        button {
+        {#  padding: 19px 39px 18px 39px;#}
+            color: #FFF;
+            background-color: #2c3e50;
+            font-size: 18px;
+            text-align: center;
+            font-style: normal;
+            border-radius: 5px;
+        {#  width: 100%;#}
+            border: 1px solid #2c3e50;
+            border-width: 1px 1px 3px;
+            box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+            margin-bottom: 10px;
+        }
+
+        {#fieldset {#}
+        {#  margin-bottom: 30px;#}
+        {#  border: none;#}
+        {#}#}
+
+        legend {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        label.light {
+            font-weight: 300;
+            display: inline;
+        }
+
+        .number {
+            background-color: #5fcf80;
+            color: #fff;
+            height: 30px;
+            width: 30px;
+            display: inline-block;
+            font-size: 0.8em;
+            margin-right: 4px;
+            line-height: 30px;
+            text-align: center;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+            border-radius: 100%;
+        }
+
+        @media screen and (min-width: 480px) {
+
+            form {
+                max-width: 480px;
+            }
+
+        }
+    </style>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+                maxDate: today,
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#unit").change(function(){
+                $("#line option[value!='']").remove();
+                var depot_code = $(this).val();
+                $.ajax({
+                    url : "{% url 'get_machine_details' %}",
+                    data : {"depot_code": depot_code},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.machine_items), function(i, v){
+                                $("#line").append("<option value="+v.no+">"+v.no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("#line option[value!='']").remove();
+                    }
+                });
+            });
+            $("#group").change(function(){
+                if ($("#group").val() == 'SuperVisor'){
+                    $("#line").prop('required',true);
+                }
+            });
+        });
+
+    </script>
+{% endblock extra_js %}
+

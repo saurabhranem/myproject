@@ -1,0 +1,368 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'scanning' brand %}">Production Process</a></li>
+                            {#                            <li><a href="/1/process/1/batch/list/">{{ plans.shift.name }}</a></li>#}
+                            {#                            <li class="active"></i>{{ plans.line.name}} - {{ plans.plan_date }}</li>#}
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default">
+                        <p id="showreason"></p>
+                        <div class="portlet-heading" style="padding: 10px">
+                            <div class="portlet-title">
+                                <h4>Plant Name:{{ plans.unit.name }} -- Machine No:{{ plans.machine.no }} -- Product:{{ plans.product.code }}</h4>
+                            </div>
+                            <form action="{% url 'scanning' brand %}" method="GET" style="float: right">
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" id="depot_id" required name="depot_code" class="">
+                                        <option value="">Select Plant</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.id }}"
+                                                    {% if plans.product.code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="btn btn-white" id="line_id" required name="machine_no" class="">
+                                        <option value="">Select Machine</option>
+                                        {% for d in machine_details %}
+                                            <option value="{{ d.no }}"
+                                                    {% if plans.machine.no == d.no %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.no }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="btn btn-white" id="shift_id" required name="shift_no" class="">
+                                        <option value="">Select Shift</option>
+                                        {% for d in shift_details %}
+                                            <option value="{{ d.shift_no }}"
+                                                    {% if plans.shift.shift_no == d.shift_no %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.shift_no }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-white" value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right">
+                                    <input type="text" name="date" id="id_date" size="16" placeholder="Select Plan Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if plan_date %}{{ plan_date }}{% endif %}"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Today's plan is not available. </h4>
+                            {% elif plans %}
+
+                                        <label>Start Time: </label>
+                                        <input type="time" id="starttime" required="true" value="{{ start_time }}">
+                                        <label>End Time: </label>
+                                        <input type="time" id="id_end_time" required="true" value="{{ end_time }}">
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Count</th>
+                                            <th>Target Count</th>
+                                            <th>Threshold</th>
+                                            <th>Production Count</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="batch_processes">
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <input type="number" class="form-control" id="item-data"
+                                                           data-element="{{ plans.batch_process_info_id }}">
+                                                </div>
+                                                <p id="mandatory_count" style="color:red">** Production Count is mandatory</p>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <input type="text" class="form-control" id="accepted-count"
+                                                           value="{{ plans.target }}" disabled>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <input type="text" class="form-control" id="minimum-count"
+                                                           value="{{ plans.minimum_target }}" disabled>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <input type="text" class="form-control" id="rejection-count"
+                                                           value={{ plans.actual }} disabled>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <select id="dropdown_reasons" name="reason" class="">
+                                                    <option value="">Select Reason</option>
+                                                    {% for i, d in dropdown_reasons %}
+                                                        <option value="{{ d }}">
+                                                            {{ i }}
+                                                        </option>
+                                                    {% endfor %}
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <button id="submit_reason" style="margin-top: 18px" type="button" class="btn btn-default">Save changes</button>
+                                                <br>
+                                                <textarea id="reason_text" style="margin-top: 10px" rows="4" cols="65">   </textarea>
+                                                <p id="mandatory_data" style="color:red">** Reason is mandatory</p>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <h4>Please Select Plant, Machine and Shift. </h4>
+                            {% endif %}
+                            {% if reasons %}
+                                {% if reasons != "No Data" %}
+                                    <a class="btn btn-green" id="log-button">Logs</a>
+                                    <div class="table-responsive" id="reasons-table">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Time Stamp</th>
+                                                <th>Updated Time</th>
+                                                <th>Threshold</th>
+                                                <th>Achieved Target Per Hour</th>
+                                                <th>Reason</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="batch_processes">
+                                            {% for reason in reasons %}
+                                                <tr>
+                                                    <td>
+                                                        {{ reason.time }}
+                                                    </td>
+                                                    <td>
+                                                        {{ reason.created_at }}
+                                                    </td>
+                                                    <td>
+                                                        {{ reason.minimum_target_per_hour}}
+                                                    </td>
+                                                    <td>
+                                                        {{ reason.achieved_count_per_hour }}
+                                                    </td>
+                                                    <td>
+                                                        {% if reason.reason %}
+                                                            {{ reason.reason }}
+                                                        {% else %}
+                                                            NA
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#reasons-table').hide();
+            $('#log-button').click(function () {
+                $('#reasons-table').toggle();
+            });
+            var today = new Date();
+            var time = today.getTime();
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+                minDate: '-1970/01/02',
+                maxDate: today,
+            });
+            $("#mandatory_data").hide();
+            $("#mandatory_count").hide();
+            $("#showreason").hide();
+            $("#reason_text").hide();
+            $("select#depot_id").change(function(){
+                $("select#line_id option[value!='']").remove()
+                var date = $("#id_date").val();
+                var depot_code = $(this).val();
+                $.ajax({
+                    url : "{% url 'get_machine_details' brand %}",
+                    data : {"depot_code": depot_code, "plan_date":date},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.machine_items), function(i, v){
+                                $("select#line_id").append("<option value="+v.no+">"+v.no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#line_id option[value!='']").remove();
+                    }
+                });
+            });
+            $("select#line_id").change(function(){
+                $("select#shift_id option[value!='']").remove();
+                var date = $("#id_date").val();
+                var depot_code = $('#depot_id').val();
+                var line_id = $(this).val();
+                $.ajax({
+                    url : "{% url 'get_shift_id' brand %}",
+                    data : {"depot_code": depot_code, "plan_date":date, "line_id":line_id},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.shift_items), function(i, v){
+                                $("select#shift_id").append("<option value="+v.shift_no+">"+v.shift_no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#shift_id option[value!='']").remove();
+                    }
+                });
+            });
+            $('#dropdown_reasons').change(function () {
+                var selected = $('#dropdown_reasons').val();
+                $("#reason_text").hide();
+                $("#mandatory_count").hide();
+                $("#mandatory_data").hide();
+                if (selected == 'Other'){
+                    $("#reason_text").show();
+                }
+            });
+            $('#submit_reason').click(function () {
+                $("#submit_reason").attr("disabled", true);
+                $("#mandatory_count").hide();
+                var selected = $('#dropdown_reasons').val();
+                var product_count = $('#item-data').val();
+{#                id_start_time#}
+                var start_time = $('#id_start_time').val();
+                var end_time = $('#id_end_time').val();
+
+                if (product_count != ''){
+                    var qr_code = parseInt(product_count);
+                }
+                else{
+                    $("#mandatory_count").show();
+                    $("#submit_reason").attr("disabled", false);
+                    return;
+                }
+                var reason_text = selected;
+                var minimum_target = parseInt("{{ plans.minimum_target }}");
+                if (qr_code != ''){
+                    qr_has_values = true;
+                }
+                else{
+                    qr_has_values = false;
+                }
+                if (minimum_target > qr_code && reason_text == ""){
+                    $("#mandatory_data").show();
+                    $("#submit_reason").attr("disabled", false);
+                    return;
+
+                }
+                if (selected == 'Other'){
+                    $("#reason_text").show();
+                    var reason = $('#reason_text').val();
+                    var text = $.trim(reason);
+                    if (text != '' ){
+                        var reason_text = text;
+                    }
+                    else{
+                        $("#mandatory_data").show();
+                        var reason_text = text;
+                        $("#submit_reason").attr("disabled", false);
+                        return;
+                    }
+                }
+                else{
+                    var reason_text = selected;
+                }
+                $("#starttime").timepicker();
+                if((qr_has_values == true && reason_text == '') || (qr_has_values == true && minimum_target >= qr_code)) {
+                    var qr_code = qr_code;
+                    var reason = reason_text;
+                    var plan_id = "{{ plans.id }}";
+                    var data = parseInt($('#rejection-count').val());
+                    var postData = {planid:plan_id, qr_code:qr_code, reason: reason, end_time: end_time,
+                        start_time: start_time};
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url "update_count" brand %}",
+                        data: postData,
+                        statusCode: {
+                            200: function (response) {
+                                json = $.parseJSON(response);
+                                if (json.success == true){
+                                    $('#rejection-count').val(json.actual_count);
+                                    window.location.reload();
+                                    $("#showreason").text(json.message);
+                                    $("#showreason").show();
+                                    $("#reason_text").hide();
+                                    $("#mandatory_data").hide();
+                                    $("#submit_reason").attr("disabled", false);
+                                }
+                                else if (json.success == false){
+                                    $('#rejection-count').val(json.actual_count);
+                                    window.location.reload();
+                                    $("#showreason").text(json.message);
+                                    $("#showreason").show();
+                                    $("#reason_text").hide();
+                                    $("#mandatory_data").hide();
+                                    $("#submit_reason").attr("disabled", false);
+                                }
+                            },
+                        },
+                        500: function (response) {
+                            json = $.parseJSON(response);
+                            window.location.reload();
+                            console.log('Process Interrupted. Please Try Again');
+                            $('#assembly_error').html('Process Interrupted. Please Try Again');
+                            $('#assembly_error').css('color', 'red');
+                            $('#assembly_error').fadeIn('slow');
+                            $("#submit_reason").attr("disabled", false);
+
+                        },
+
+                    });
+                }
+            });
+        });
+    </script>
+
+{% endblock extra_js %}

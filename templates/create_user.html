@@ -1,0 +1,241 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="/">Dashboard</a></li>
+                            <li><a href="/user-details/">User Details</a></li>
+                            <li><a href="">Create User</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <form  method="POST" action="/create_user/">
+                                {% csrf_token %}
+                                <fieldset>
+                                    <label for="username">User Name:</label>
+                                    <input type="text" id="username" required name="user_username">
+                                    <p id="username_check" style="color:#ff0000">User name is already exist!</p>
+                                    <p id="available_username" style="color:#008000">User name is available</p>
+
+                                    <label for="firstname">First Name:</label>
+                                    <input type="text" id="firstname" name="user_firstname">
+
+                                    <label for="lastname">Last Name:</label>
+                                    <input type="text" id="lastname" name="user_lastname">
+
+                                    <label for="mail">Email:</label>
+                                    <input type="email" id="mail" required name="user_email">
+
+
+                                    <label for="password_one">Password:</label>
+                                    <input type="password" id="password_one" required name="user_password_one">
+
+                                    <label for="password">Conform Password:</label>
+                                    <input type="password" id="password" required name="user_password">
+                                    <p id="missmatch" style="color:#ff0000" >Password doesn't match.</p>
+                                    <p id="match" style="color:#008000" >Password matched.</p>
+                                </fieldset>
+                                <button type="submit">Create</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+
+
+        *, *:before, *:after {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+
+        form {
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: #f4f7f8;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="datetime"],
+        input[type="email"],
+        input[type="number"],
+        input[type="search"],
+        input[type="tel"],
+        input[type="time"],
+        input[type="url"],
+        textarea,
+        select {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            font-size: 16px;
+            height: auto;
+            margin: 0;
+            outline: 0;
+        {#            padding: 15px;#}
+            width: 100%;
+            background-color: #e8eeef;
+            color: #8a97a0;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+            margin-bottom: 10px;
+        }
+
+
+        select {
+            padding: 6px;
+            height: 32px;
+            border-radius: 2px;
+        }
+
+        button {
+        {#  padding: 19px 39px 18px 39px;#}
+            color: #FFF;
+            background-color: #2c3e50;
+            font-size: 18px;
+            text-align: center;
+            font-style: normal;
+            border-radius: 5px;
+        {#  width: 100%;#}
+            border: 1px solid #2c3e50;
+            border-width: 1px 1px 3px;
+            box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+            margin-bottom: 10px;
+        }
+
+        {#fieldset {#}
+        {#  margin-bottom: 30px;#}
+        {#  border: none;#}
+        {#}#}
+
+        {#        legend {#}
+        {#            font-size: 1.4em;#}
+        {#            margin-bottom: 10px;#}
+        {#        }#}
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        label.light {
+            font-weight: 300;
+            display: inline;
+        }
+
+        .number {
+            background-color: #5fcf80;
+            color: #fff;
+            height: 30px;
+            width: 30px;
+            display: inline-block;
+            font-size: 0.8em;
+            margin-right: 4px;
+            line-height: 30px;
+            text-align: center;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+            border-radius: 100%;
+        }
+
+        @media screen and (min-width: 480px) {
+
+            form {
+                max-width: 480px;
+            }
+
+        }
+    </style>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#username_check').hide();
+            $('#available_username').hide();
+            $('#missmatch').hide();
+            $('#match').hide();
+
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#username").blur(function(){
+                if ($("#username").val()){
+                    var full_username = $("#username").val();
+                    var username = $.trim(full_username);
+                    $.ajax({
+                        url : "{% url 'check_username' %}",
+                        data : {"username": username},
+                        dataType : "json",
+                        async : false,
+                        success : function(d){
+                            if (d.success == true){
+                                $('#available_username').show();
+                                $('#username_check').hide();
+                                $("#username").val(username)
+                            }
+                            else if (d.success == false){
+                                $('#username_check').show();
+                                $('#available_username').hide();
+                            }
+                        },
+                        failure : function(d){
+                            $("#line option[value!='']").remove();
+                        }
+                    });
+                }
+            });
+            $("#password").blur(function(){
+                var password_two = $("#password").val();
+                var confrim_passowrd = $.trim(password_two);
+                var password_one = $("#password_one").val();
+                var passowrd_temp = $.trim(password_one);
+                if (confrim_passowrd != '' && passowrd_temp !=''){
+                    if(confrim_passowrd == passowrd_temp){
+                        $('#match').show();
+                        $('#missmatch').hide();
+                    }
+                    else{
+                        $('#missmatch').show();
+                        $('#match').hide();
+                    }
+                }
+
+            });
+
+        });
+
+    </script>
+{% endblock extra_js %}
+

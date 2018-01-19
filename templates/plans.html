@@ -1,0 +1,171 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'plan' brand %}">Plan Details</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                {% if request.user.user_brand.group.name == 'Admin' or request.user.user_brand.group.name == 'SuperAdmin' or request.user.user_brand.group.name == 'PlantAdmin' %}
+                    <div class="col-lg-4 pull-left" style="margin-bottom:20px;">
+                        <a href="{% url 'add_plan' brand %}">
+                            <button class="btn btn-default">
+                                <i class="fa fa-plus-circle" aria-hidden="true">
+                                    Add Plan
+                                </i>
+                            </button>
+                        </a>
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                            <i class="fa fa-cloud-upload">
+                                Upload CSV
+                            </i>
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            {% for msg in messages %}
+                                <h5 class="{{ msg.tags }}">{{ msg }}</h5>
+                            {% endfor %}
+                        </div>
+                        <div class="portlet-heading" style="padding: 10px">
+
+                            <form action="{% url 'plan' brand %}" method="GET" style="float: right">
+
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" id="depot_code" name="depot_code" class="">
+                                        <option value="">Select Plant</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-white" value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Plan is not available for the plant. </h4>
+                            {% elif plans %}
+                                <div id="example-table_wrapper" class="dataTables_wrapper form-inmachine" role="grid">
+                                <table id="example-table" class="table table-striped table-bordered table-hover table-green dataTable" aria-describedby="example-table_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Plant Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Plan Date</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Machine No/ Machine Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Shift No/ Shift Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Product Code/ Product Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Target</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Threshold</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="1" style="width: 178px;">Actual</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                    {% for i in plans %}
+                                        <tr class="gradeA odd">
+                                            <td class="">{{ i.unit.code }} - {{ i.unit.name }}</td>
+                                            <td class="">{{ i.plan_date }}</td>
+                                            <td class="">{{ i.machine.no }} - {{ i.machine.name }}</td>
+                                            <td class="">{{ i.shift.shift_no }} - {{ i.shift.name }}</td>
+                                            <td class="">{{ i.product.code }} - {{ i.product.name }}</td>
+                                            <td class="">{{ i.target }}</td>
+                                            <td class="">{{ i.minimum_target }}</td>
+                                            <td class="">{{ i.actual }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <h4>Please select Plant. </h4>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include 'pagination.html' %}
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">CSV Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                            <div>
+                                <label>
+                                    Download Sample CSV :
+                                </label>
+                                <a href="{% url 'upload-plans' brand %}">
+                                    <input type="button" class="btn btn-green" value="Download"/>
+                                </a>
+                            </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <form method="POST" action="{% url 'upload-plans' brand %}"
+                              enctype="multipart/form-data"  >
+                            {% csrf_token %}
+                            <label>
+                                Upload CSV File :
+                            </label>
+                            <div style="display: inline-block" >
+                                <input type="file" accept=".csv" required name="plan-sheet" />
+                            </div>
+                            <div style="display: inline-block">
+                                <input type="submit" class="btn btn-default" value="Upload" />
+                            </div>
+                        </form>
+                    </div>
+                    <br>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+                maxDate: today,
+            });
+        });
+
+    </script>
+{% endblock extra_js %}

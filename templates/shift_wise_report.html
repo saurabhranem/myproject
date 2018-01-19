@@ -1,0 +1,173 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'reports-home' brand %}">Reports</a></li>
+                            <li><a href="">Shift Wise Report</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            {% for msg in messages %}
+                                <h5 class="{{ msg.tags }}">{{ msg }}</h5>
+                            {% endfor %}
+                        </div>
+                        <div class="portlet-heading" style="padding: 10px">
+                            <form action="{% url 'shift_wise_report' brand %}" method="GET" style="float: right">
+                                {% if plant_name %}
+                                    {#                                    <div style="float: left; margin-right: 200px;">#}
+                                    {#                                        <div class="add-element">#}
+                                    {#                                            {{ plant_name }} - {{ selected_date }}#}
+                                    {#                                        </div>#}
+                                    {#                                    </div>#}
+                                {% endif %}
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" name="depot_code" required id="depot_id" class="">
+                                        <option value="">Select Plant</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="btn btn-white" id="shift_id" required name="shift_no" class="">
+                                        <option value="">Select Shift</option>
+                                        {% for d in shift_details %}
+                                            <option value="{{ d.shift_no }}"
+                                                    {% if shift_no == d.shift_no %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.shift_no }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input class="btn btn-white" type="submit" id="form_submit" class="remove-element" value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right; margin-left: 10px;">
+                                    <input type="text" name="to_date" id="to_date" size="16" placeholder="Select To Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if to_date %}{{ to_date }}{% endif %}"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right">
+                                    <input type="text" name="from_date" id="from_date" size="16" placeholder="Select From Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if from_date %}{{ from_date }}{% endif %}"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Plan is not available. </h4>
+                            {% elif plans %}
+                                <p style="text-align: center">Shift Wise Report</p>
+                                <div id="example-table_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                                <div id="myDiv"> </div>
+                            {% else %}
+                                <h4>Please select Plan date, Branch and Machine. </h4>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/plotly-latest.min.js' %}"></script>
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#from_date").datetimepicker({
+                autoclose: true,
+                maxDate: today,
+                showMeridian: true,
+            });
+            $("input#to_date").datetimepicker({
+                autoclose: true,
+                maxDate: today,
+                showMeridian: true,
+            });
+
+{#            $('#form_submit').click(function(){#}
+{#                var complaintFromDate = $('#from_date').val();#}
+{#                var complaintToDate = $('#to_date').val();#}
+{#                if (complaintFromDate != '' && complaintToDate != ''){#}
+{##}
+{#                    if (complaintFromDate == complaintToDate){#}
+{#                        alert('From-Date and To-Date should not be the same');#}
+{#                        return#}
+{#                    }#}
+{#                    else if(complaintFromDate != '' && complaintToDate != ''){#}
+{#                        if((new Date(complaintFromDate) < new Date(complaintToDate)) == false){#}
+{#                            alert('To-Date should not be the less than From-Date')#}
+{#                            return#}
+{#                        }#}
+{#                    }#}
+{#                }#}
+{##}
+{#            });#}
+        });
+
+
+    </script>
+    <script>
+        {% autoescape off %}
+            {% if plans != "No Data" %}
+                var plans_details = {{ plans }};
+                var target = [];
+                var actual = [];
+                var x_axis = [];
+                for(count = 0; count < plans_details.length; count++){
+                    target.push(plans_details[count].target);
+                    actual.push(plans_details[count].actual);
+                    x_axis.push(plans_details[count].machine);
+                }
+                var trace2 = {
+                    x: x_axis,
+                    y: actual,
+                    text: actual,
+                    textposition: 'auto',
+                    hoverinfo: 'none',
+                    name: 'Achieved',
+                    type: 'bar',
+                };
+                var trace1 = {
+                    x: x_axis,
+                    y: target,
+                    text: target,
+                    textposition: 'auto',
+                    hoverinfo: 'none',
+                    name: 'Taret',
+                    type: 'bar'
+                };
+                var data = [trace1, trace2];
+
+                var layout = {barmode: 'group'};
+
+                Plotly.newPlot('myDiv', data, layout);
+            {% endif %}
+        {% endautoescape %}
+
+    </script>
+{% endblock extra_js %}

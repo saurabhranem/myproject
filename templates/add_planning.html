@@ -1,0 +1,146 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'plan' brand %}">Plan Details</a></li>
+                            <li><a href="">Add Plan</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                {% if success_message %}
+                                    {{ success_message }}
+                                {% else %}
+
+                                    <form  enctype="multipart/form-data" id="AddCategoryForm" class="profileform" method="POST" action="{% url 'add_plan' brand %}">
+                                        {% csrf_token %}
+
+                                        <div class="col-lg-6" >
+
+                                            <div class="form-group">
+                                                <label for="shift">Shift: *</label>
+                                            </div>
+                                            <div>
+                                                {{ planning_form.shift }}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="unit">Plant: *</label>
+                                            </div>
+                                            <div>
+                                                {{ planning_form.unit }}
+                                                {% if planning_form.unit.errors %}
+                                                    <div>
+                                                        {% for error in planning_form.unit.errors %}
+                                                            <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <br>
+                                            <div id="machine_lable" class="form-group">
+                                                <label for="machine">Machine: </label>
+                                            </div>
+                                            <div id="machine">
+                                                <select class="btn btn-default"  id="line_id" required name="machine" class="">
+                                                    <option value="">Select Machine</option>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="product">Product: *</label>
+                                            </div>
+                                            <div>
+                                                {{ planning_form.product }}
+                                            </div>
+                                            <br>
+
+                                            <div class="form-group">
+                                                <label for="plan_date">Plan Date: *</label>
+                                            </div>
+                                            <div>
+                                                {{ planning_form.plan_date }}
+                                                {% if planning_form.plan_date.errors %}
+                                                    <div>
+                                                        {% for error in planning_form.plan_date.errors %}
+                                                            <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" class="error">{{ error }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="taget">Target: *</label>
+                                            </div>
+                                            <div>
+                                                {{ planning_form.target }}
+                                            </div>
+                                            <br>
+
+                                            <button type="submit" class="btn btn-default">Add</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.validator.addMethod('start', function(start, element) {
+                return this.optional(element) || start.match(/^([01][0-9]|2[0-3]):[0-5][0-9]$/);
+            }, 'Enter a valid time: hh:mm');
+            $(function() {
+                $('form').validate({rules: {
+                    timeField: {required: true, time: true}
+                }});
+            });
+        $("select#depot_id").change(function(){
+                $("select#line_id option[value!='']").remove();
+                var date = $("#id_date").val();
+                var depot = $(this).val();
+                var depot_code = parseInt(depot);
+                $.ajax({
+                    url : "{% url 'get_machine_details' brand %}",
+                    data : {"depot_code": depot_code},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.machine_items), function(i, v){
+                                $("select#line_id").append("<option value="+v.id+">"+v.no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#line_id option[value!='']").remove();
+                    }
+                });
+            });
+        });
+        </script>
+
+{% endblock extra_js %}

@@ -1,0 +1,140 @@
+{% load static %}
+<!-- begin SIDE NAVIGATION -->
+<nav class="navbar-side" role="navigation">
+    <div class="navbar-collapse sidebar-collapse collapse">
+        <ul id="side" class="nav navbar-nav side-nav">
+            <!-- begin SIDE NAV USER PANEL -->
+            <li class="side-user hidden-xs">
+                {#                                <img class="img-circle" src="{% static 'img/Logo.png' %}" alt="">#}
+{#            {% if request.user.user_brand.image_url.url %}#}
+                <img class="img-circle" style="width: 73%;height: 70%;" src="{% if request.user.user_brand.image_url %}{{ request.user.user_brand.image_url.url }}{% else %}{% static 'img/profile-default.png' %}{% endif %}" alt="" />
+{#            {% else %}#}
+{#                <img class="img-circle" src="{% static 'img/profile-pic.jpg' %}" alt="">#}
+{#                <img class="img-circle" src="{% static 'profile/images.png' %}" alt="">#}
+{#            {% endif %}#}
+
+                {#                <img src="{% static 'img/Logo.png' %}" class="img-responsive" alt="" style="    margin-left: 0px;">#}
+                <p class="welcome">
+                    <i class="fa fa-key"></i> Logged in as
+                </p>
+                <p class="name tooltip-sidebar-logout">
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                        {{ request.user }}
+                    {% endif %}
+                    <a style="color: inherit" class="" href="{% url '_logout' %}" data-toggle="tooltip"
+                       data-placement="top" title="Logout">
+                        <i class="fa fa-sign-out"></i></a>
+                </p>
+                <div class="clearfix"></div>
+            </li>
+            <!-- end SIDE NAV USER PANEL -->
+            <!-- begin DASHBOARD LINK -->
+            <li>
+                <a class="active" href="/">
+                    <i class="fa fa-dashboard"></i> Dashboard
+                </a>
+            </li>
+            {% if request.user.user_brand.group.name == 'Admin' or request.user.user_brand.group.name == 'SuperAdmin' or request.user.user_brand.group.name == 'PlantAdmin' or request.user.user_brand.group.name == 'ReadOnly' %}
+                <li>
+                    <a class="active" href="{% url 'user-details'  brand %}">
+                        <i class="fa fa-users"></i> Users
+                    </a>
+                </li>
+
+            {% endif %}
+            {% if request.user.user_brand.group.name == 'Admin' or request.user.user_brand.group.name == 'SuperAdmin' or request.user.user_brand.group.name == 'PlantAdmin' or request.user.user_brand.group.name == 'ReadOnly' or request.user.user_brand.group.name == 'SuperVisor' %}
+                <li>
+                    <a class="active" href="{% url 'business-unit' brand %}">
+                        <i class="fa fa-building-o "></i> Plant
+                    </a>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'categories' brand %}">
+                        <i class="fa fa-qrcode"></i> Category
+                    </a>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'machines' brand %}">
+                        <i class="fa fa-cogs"></i> Machine
+                    </a>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'shifts' brand %}">
+                        <i class="fa fa-clock-o"></i> shift
+                    </a>
+                </li>
+                <li class="panel">
+                    <a href="javascript:;" data-parent="#side" data-toggle="collapse"
+                       class="accordion-toggle" data-target="#tables">
+                        <i class="fa fa-table"></i> Products <i class="fa fa-caret-down"></i>
+                    </a>
+
+                    <ul class="collapse nav" id="tables">
+                        <li>
+                            <a href="{% url 'products' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Stocks
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'issued_stocks' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Issued Stocks
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'plan' brand %}">
+                        <i class="fa fa-list-alt "></i> Plan
+                    </a>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'scanning' brand %}">
+                        <i class="fa fa-tasks "></i> Production Process
+                    </a>
+                    </li>
+                    <li>
+                    <a class="active" href="{% url 'performance' brand %}">
+                        <i class="fa fa-play-circle-o "></i> Live Performance
+                    </a>
+                    </li>
+
+                <li class="panel">
+                    <a href="javascript:;" data-parent="#side" data-toggle="collapse" class="accordion-toggle" data-target="#charts">
+                        <i class="fa fa-bar-chart-o"></i> Graphical View <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="collapse nav" id="charts">
+                        <li>
+                            <a href="{% url 'plant_wise_report' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Plant wise Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'machine_wise_report' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Machine wise Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'shift_wise_report' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Shift wise Report
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'bar-chart' brand %}">
+                                <i class="fa fa-angle-double-right"></i> Hourly wise Report
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="active" href="{% url 'report-download' brand %}">
+                        <i class="fa fa-files-o"></i>Download Reports
+                    </a>
+                </li>
+            {% endif %}
+            <!-- end DASHBOARD LINK -->
+        </ul>
+    </div>
+</nav>
+<!-- end SIDE NAVIGATION -->

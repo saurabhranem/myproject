@@ -1,0 +1,113 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'shifts' brand %}">Shift Details</a></li>
+                            <li><a href="">Add Shift</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                {% if success_message %}
+                                    {{ success_message }}
+                                {% else %}
+
+                                    <form  enctype="multipart/form-data" id="AddCategoryForm" class="profileform" method="POST" action="{% url 'add_shift' brand %}">
+                                        {% csrf_token %}
+
+                                        <div class="col-lg-6" >
+
+                                            <div class="form-group">
+                                                <label for="name">Shift Name: *</label>
+                                            </div>
+                                            <div>
+                                                {{ shift_form.name }}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="shift_no">Shift Number: *</label>
+                                            </div>
+                                            <div>
+                                                {{ shift_form.shift_no }}
+                                                {% if shift_form.shift_no.errors %}
+                                                    <div>
+                                                        {% for error in shift_form.shift_no.errors %}
+                                                            <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" style="color: red"  class="error">{{ error }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="start">Start Time: *</label>
+                                            </div>
+                                            <div>
+                                                {{ shift_form.start }}
+                                                {% if shift_form.start.errors %}
+                                                    <div>
+                                                        {% for error in shift_form.start.errors %}
+                                                            <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" style="color: red"  class="error">{{ error }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="end">End Time: *</label>
+                                            </div>
+                                            <div>
+                                                {{ shift_form.end }}
+                                                {% if shift_form.end.errors %}
+                                                    <div>
+                                                        {% for error in shift_form.end.errors %}
+                                                            <label id="user_registration_form_person_fname_error_{{ forloop.counter }}" style="color: red"  class="error">{{ error }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <br>
+                                            <button type="submit" class="btn btn-default">Add</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.validator.addMethod('start', function(start, element) {
+                return this.optional(element) || start.match(/^([01][0-9]|2[0-3]):[0-5][0-9]$/);
+            }, 'Enter a valid time: hh:mm');
+
+            $(function() {
+                $('form').validate({rules: {
+                    timeField: {required: true, time: true}
+                }});
+            });
+        });
+
+{% endblock extra_js %}

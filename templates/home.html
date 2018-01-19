@@ -1,0 +1,270 @@
+{% extends "_base.html" %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+                        <ol class="breadcrumb">
+                            <li class="active"><i class="fa fa-dashboard"></i>  Productivity and Efficiency</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2>
+                    <small>Productivity and Efficiency</small>
+                </h2>
+            </div>
+            <div class="row">
+                {% if request.user.user_brand.group.name == 'Admin' or request.user.user_brand.group.name == 'SuperAdmin' or request.user.user_brand.group.name == 'PlantAdmin' or request.user.user_brand.group.name == 'ReadOnly' %}
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'user-details' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>User</b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'user-details' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if request.user.user_brand.group.name == 'Admin' or request.user.user_brand.group.name == 'SuperAdmin' or request.user.user_brand.group.name == 'PlantAdmin' or request.user.user_brand.group.name == 'ReadOnly' or request.user.user_brand.group.name == 'SuperVisor' %}
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'business-unit' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>Plant</b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'business-unit' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'categories' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Category
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'categories' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'machines' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>Machine</b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'machines' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'shifts' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Shift
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'shifts' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'products' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>Product</b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'products' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'issued_stocks' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>Issued Stocks</b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'issued_stocks' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'plan' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Plan
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'plan' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'scanning' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Production Process
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'scanning' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'performance' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Live Performance
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'performance' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'reports-home' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Graphical View
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+
+                                </div>
+                                <a href="{% url 'reports-home' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="circle-tile">
+                            <a href="{% url 'report-download' brand %}">
+                                <div class="circle-tile-heading orange">
+                                    <i class="fa fa-dot-circle-o fa-fw fa-3x"></i>
+                                </div>
+                            </a>
+                            <div class="circle-tile-content orange">
+                                <div class="circle-tile-description text-faded">
+                                    <b>
+                                        Download Reports
+                                    </b>
+                                </div>
+                                <div class="circle-tile-number text-faded">
+                                </div>
+                                <a href="{% url 'report-download' brand %}" class="circle-tile-footer">More Info <i
+                                        class="fa fa-chevron-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

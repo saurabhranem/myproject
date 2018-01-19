@@ -1,0 +1,193 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'reports-home' brand %}">Reports</a></li>
+                            <li><a href="">Hourly Report</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            {% for msg in messages %}
+                                <h5 class="{{ msg.tags }}">{{ msg }}</h5>
+                            {% endfor %}
+                        </div>
+                        <div class="portlet-heading" style="padding: 10px">
+                            <form action="{% url 'bar-chart' brand %}" method="GET" style="float: right">
+                                {% if plant_name %}
+                                    <div style="float: left; margin-right: 200px;">
+                                        <div class="add-element">
+                                            {{ plant_name }} - {{ selected_date }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" required id="depot_id" name="depot_code" class="">
+                                        <option value="">Select Plant</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.id }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="btn btn-white" required id="line_id" name="machine_no" class="">
+                                        <option value="">Select Machine</option>
+                                        {% for d in machine_details %}
+                                            <option value="{{ d.no }}"
+                                                    {% if machine_code == d.no %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.no }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="btn btn-white" required id="shift_id" name="shift_no" class="">
+                                        <option value="">Select Shift</option>
+                                        {% for d in shift_details %}
+                                            <option value="{{ d.shift_no }}"
+                                                    {% if shift_no == d.shift_no %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.shift_no }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-white"sca value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right">
+                                    <input type="text" name="date" id="id_date" size="16" placeholder="Select Plan Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if plan_date %}{{ plan_date }}{% endif %}"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Plan is not available for the selected date. </h4>
+                            {% elif plans %}
+                                <p style="text-align: center">Hourly Report</p>
+                                <div id="example-table_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                                <div id="myDiv"> </div>
+                            {% else %}
+                                <h4>Please select Plan date and Branch. </h4>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/plotly-latest.min.js' %}"></script>
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+                maxDate: today,
+            });
+            $("select#depot_id").change(function(){
+                $("select#line_id option[value!='']").remove();
+                var date = $("#id_date").val();
+                var depot_code = $(this).val();
+                $.ajax({
+                    url : "{% url 'get_machine_details' brand %}",
+                    data : {"depot_code": depot_code, "plan_date":date},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.machine_items), function(i, v){
+                                $("select#line_id").append("<option value="+v.no+">"+v.no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#line_id option[value!='']").remove();
+                    }
+                });
+            });
+            $("select#line_id").change(function(){
+                $("select#shift_id option[value!='']").remove();
+                var date = $("#id_date").val();
+                var depot_code = $('#depot_id').val();
+                var line_id = $(this).val();
+                $.ajax({
+                    url : "{% url 'get_shift_id' brand %}",
+                    data : {"depot_code": depot_code, "plan_date":date, "line_id":line_id},
+                    dataType : "json",
+                    async : false,
+                    success : function(d){
+                        if (d.success == true){
+                            $.each(eval(d.shift_items), function(i, v){
+                                $("select#shift_id").append("<option value="+v.shift_no+">"+v.shift_no+"-"+v.name+"</option>")
+                            });
+                        }
+                    },
+                    failure : function(d){
+                        $("select#shift_id option[value!='']").remove();
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        {% autoescape off %}
+            var plans_details = {{ plans }};
+        {% endautoescape %}
+        var target = [];
+        var actual = [];
+        var x_axis = [];
+        for(count = 0; count < plans_details.length; count++){
+            target.push(plans_details[count].target);
+            actual.push(plans_details[count].actual);
+            x_axis.push(plans_details[count].machine);
+        }
+        var trace2 = {
+            x: x_axis,
+            y: actual,
+            text: actual,
+            textposition: 'auto',
+            hoverinfo: 'none',
+            name: 'Achieved',
+            type: 'bar',
+        };
+        var trace1 = {
+            x: x_axis,
+            y: target,
+            text: target,
+            textposition: 'auto',
+            hoverinfo: 'none',
+            name: 'Taret',
+            type: 'bar'
+        };
+        var data = [trace1, trace2];
+
+        var layout = {barmode: 'group'};
+
+        Plotly.newPlot('myDiv', data, layout);
+    </script>
+{% endblock extra_js %}

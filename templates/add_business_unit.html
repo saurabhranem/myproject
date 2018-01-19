@@ -1,0 +1,71 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'business-unit' brand %}">Plant Details</a></li>
+                            <li><a href="">Add Plant</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            <h5>{{ message }}</h5>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                {% if success_message %}
+                                    {{ success_message }}
+                                {% else %}
+
+                                    <form  enctype="multipart/form-data" id="AddBusinessUnitForm" class="profileform" method="POST" action="{% url 'add_business_unit' brand %}">
+                                        {% csrf_token %}
+
+                                        <div class="col-lg-6" >
+
+                                            <div class="form-group">
+                                                <label for="name">Plant Name: *</label>
+                                            </div>
+                                            <div>
+                                                {{ business_unit_form.name }}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="address">Address: *</label>
+                                            </div>
+                                            <div>
+                                                {{ business_unit_form.address }}
+                                            </div>
+                                            <br>
+                                            <div class="form-group">
+                                                <label for="code">Plant Code: *</label>
+                                            </div>
+                                            <div>
+                                                {{ business_unit_form.code }}
+                                            </div>
+                                            <br>
+                                            <button type="submit" class="btn btn-default">Add</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+

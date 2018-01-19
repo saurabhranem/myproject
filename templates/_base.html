@@ -1,0 +1,142 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title> Productivity and Efficiency</title>
+
+    {% block css %}
+        <!-- PACE LOAD BAR PLUGIN - This creates the subtle load bar effect at the top of the page. -->
+        <link href="{% static 'css/plugins/pace/pace.css' %}" rel="stylesheet">
+        <script src="{% static 'js/plugins/pace/pace.js' %}"></script>
+
+        <!-- GLOBAL STYLES - Include these on every page. -->
+        <link href="{% static 'css/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic'
+              rel="stylesheet" type="text/css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+              rel="stylesheet" type="text/css">
+        <link href="{% static 'icons/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+        <!-- PAGE LEVEL PLUGIN STYLES -->
+        <link href="{% static 'css/plugins/messenger/messenger.css' %}" rel="stylesheet">
+        <link href="{% static 'css/plugins/messenger/messenger-theme-flat.css' %}" rel="stylesheet">
+        <link href="{% static 'css/plugins/daterangepicker/daterangepicker-bs3.css' %}" rel="stylesheet">
+        <link href="{% static 'css/jquery.timepicker.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/plugins/morris/morris.css' %}" rel="stylesheet">
+        <link href="{% static 'css/plugins/jvectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet">
+{#        <link href="{% static 'css/plugins/datatables/datatables.css' %}" rel="stylesheet">#}
+
+        <!-- THEME STYLES - Include these on every page. -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <link href="{% static 'css/plugins.css' %}" rel="stylesheet">
+
+        <!-- THEME DEMO STYLES - Use these styles for reference if needed. Otherwise they can be deleted. -->
+        <link href="{% static 'css/demo.css' %}" rel="stylesheet">
+
+        <!--[if lt IE 9]>
+      <script src="{% static 'js/html5shiv.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+
+    {% endblock css %}
+    {% block extra_css %}
+    {% endblock extra_css %}
+</head>
+<body>
+<div id="wrapper">
+    {% include '_header.html' %}
+    {% include '_sidebar.html' %}
+</div>
+{% block content %}
+{% endblock content %}
+{% block js %}
+    <!-- GLOBAL SCRIPTS -->
+    <script src="{% static 'js/plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/plugins/bootstrap/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/plugins/validate/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/jquery.timepicker.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
+    <link href="{% static 'css/bootstrap-select.min.css' %}" rel="stylesheet">
+    <script src="{% static 'plugins/bootstrap-fileinput/js/fileinput.js' %}"></script>
+    <link href="{% static 'plugins/bootstrap-fileinput/css/fileinput.css' %}" rel="stylesheet">
+    <script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'js/plugins/popupoverlay/jquery.popupoverlay.js' %}"></script>
+    <script src="{% static 'js/plugins/popupoverlay/defaults.js' %}"></script>
+    <!-- HISRC Retina Images -->
+    <script src="{% static 'js/plugins/hisrc/hisrc.js' %}"></script>
+
+    <!-- PAGE LEVEL PLUGIN SCRIPTS -->
+    <!-- Moment.js -->
+    <script src="{% static 'js/plugins/moment/moment.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <!-- DataTables -->
+{#    <script src="{% static 'js/plugins/datatables/jquery.dataTables.js' %}"></script>#}
+{#    <script src="{% static 'js/plugins/datatables/datatables-bs3.js' %}"></script>#}
+    <!-- QR Code -->
+    <script src="{% static 'js/qrcode.js' %}"></script>
+    <!-- THEME SCRIPTS -->
+    <script src="{% static 'js/flex.js' %}"></script>
+    <script>
+            function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        function sameOrigin(url) {
+            // test that a given url is a same-origin URL
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                    (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                    // or any other URL that isn't scheme relative or absolute i.e relative.
+                    !(/^(\/\/|http:|https:).*/.test(url));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    </script>
+{% endblock js %}
+{% block extra_js %}
+
+{% endblock extra_js %}
+</body>
+<div>
+    <p style="text-align: center; color: white; margin-top: 20px;">
+        © 2017, Gladminds Technologies Pvt Ltd. All Rights Reserved. Version 1.0
+    </p>
+</div>
+
+</html>

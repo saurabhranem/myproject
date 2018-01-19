@@ -1,0 +1,59 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="">Reports</a></li>
+                            {#                            <li><a href="/1/process/1/batch/list/">{{ plans.shift.name }}</a></li>#}
+                            {#                            <li class="active"></i>{{ plans.line.name}} - {{ plans.plan_date }}</li>#}
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default">
+                        <div class="portlet-body">
+                            <div>
+                                <label>Plant wise report :  </label>
+                                <a href="{% url 'plant_wise_report' brand %}"><button class="btn btn-default" type="button">Plant wise Report</button></a>
+                            </div>
+                            <br>
+                            <br>
+                            <div>
+                                <label>Machine wise report :  </label>
+                                <a href="{% url 'machine_wise_report' brand %}"><button class="btn btn-default" type="button">Machine wise Report</button></a>
+                            </div>
+                            <br>
+                            <br>
+                            <div>
+                                <label>Shift wise report :  </label>
+                                <a href="{% url 'shift_wise_report' brand %}"><button class="btn btn-default" type="button">Shift wise Report</button></a>
+                            </div>
+                            <br>
+                            <br>
+                            <div>
+                                <label>Hour wise report :  </label>
+                                <a href="{% url 'bar-chart' brand %}"><button class="btn btn-default" type="button">Hourly wise Report</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    {#    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>#}
+    {#    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">#}
+
+{% endblock extra_js %}

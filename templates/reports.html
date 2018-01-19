@@ -1,0 +1,168 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="">Download Reports</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            {% for msg in messages %}
+                                <h5 class="{{ msg.tags }}">{{ msg }}</h5>
+                            {% endfor %}
+                        </div>
+                        <div class="portlet-heading" style="padding: 10px">
+                            {% if plans %}
+                                {% if plans != "No Data"%}
+                                    {#                                        <div style="float: left; margin-right: 200px;">#}
+                                    {#                                            <div class="add-element">#}
+                                    {#                                                <a href="/bar-chart/?date={{ plan_date  }}&depot_code={{ plant_details.code }}" method="GET">#}
+                                    {#                                                    <input type="button" value = "Plot Chart" style="border-radius: 5px;">#}
+                                    {#                                                </a>#}
+                                    {#                                            </div>#}
+                                    {#                                        </div>#}
+                                    <div style="float: left; margin-right: 200px;">
+                                        <div class="add-element">
+                                            <a href="{% url 'report-download' brand %}?from_date={{ from_date  }}&to_date={{ to_date  }}&depot_code={{ plant_details.code }}&report_download=True" method="GET">
+                                                <input type="button" value = "Download Report" style="border-radius: 5px;">
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <form action="{% url 'report-download' brand %}" method="GET" style="float: right">
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" id="depot_code" name="depot_code" class="">
+                                        <option value="">Select Plant</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-white" value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right; margin-left: 10px;">
+                                    <input type="text" name="to_date" id="to_date" size="16" placeholder="Select To Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if to_date %}{{ to_date }}{% endif %}"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right">
+                                    <input type="text" name="from_date" id="from_date" size="16" placeholder="Select From Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if from_date %}{{ from_date }}{% endif %}"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Plan is not available for the selected date. </h4>
+                            {% elif plans %}
+                                <div id="example-table_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                                <table id="example-table" class="table table-striped table-bordered table-hover table-green dataTable" aria-describedby="example-table_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Plant Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Plan Date</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Shift No/ Shift Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Machine No/ Machine Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Product Code/ Product Name</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Target</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Actual</th>
+                                        <th class="sorting_desc table-heading" role="columnheader" tabindex="0" aria-controls="example-table" rowspan="1" colspan="{{ colspan }}" style="width: 178px;">Reason</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                    {% for i in plans %}
+                                        <tr class="gradeA odd">
+                                            <td class="" colspan="{{ colspan }}">{{ i.unit_code }} - {{ i.unit_name }}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.plan_date }}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.shift }}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.machine }}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.product}}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.target }}</td>
+                                            <td class="" colspan="{{ colspan }}">{{ i.actual }}</td>
+                                            {% if i.reasons %}
+                                                <td class="">
+                                                    {% for r in i.reasons %}
+                                                        {{ r }}<br>
+                                                    {% endfor %}
+                                                </td>
+                                            {% else %}
+                                                <td class=""> - </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <h4>Please select Plan date and Branch. </h4>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include 'pagination.html' %}
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#from_date").datetimepicker({
+                autoclose: true,
+                 maxDate:'today',
+                showMeridian: true,
+
+            });
+            $("input#to_date").datetimepicker({
+                autoclose: true,
+                maxDate:'today',
+                showMeridian: true,
+            });
+
+            $('#form_submit').click(function(){
+                var complaintFromDate = $('#from_date').val();
+                var complaintToDate = $('#to_date').val();
+                if (complaintFromDate != '' && complaintToDate != ''){
+
+                    if (complaintFromDate == complaintToDate){
+                        alert('From-Date and To-Date should not be the same');
+                        return
+                    }
+                    else if(complaintFromDate != '' && complaintToDate != ''){
+                        if((new Date(complaintFromDate) < new Date(complaintToDate)) == false){
+                            alert('To-Date should not be the less than From-Date')
+                            return
+                        }
+                    }
+                }
+
+            });
+        });
+
+    </script>
+{% endblock extra_js %}

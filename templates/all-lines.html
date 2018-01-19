@@ -1,0 +1,128 @@
+{% extends "_base.html" %}
+{% load static %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="page-title">
+                        <ol class="breadcrumb">
+                            <i class="fa fa-dashboard"></i>
+                            <li><a href="{% url 'home' brand %}">Dashboard</a></li>
+                            <li><a href="{% url 'performance' brand %}">Live Performance</a></li>
+                            <li><a href="">Live Performance Chart</a></li>
+                            <li class="pull-right" id="demo"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p id="assembly_error" style="display: none;"></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet portlet-default" >
+                        <div class="portlet-title">
+                            {% for msg in messages %}
+                                <h5 class="{{ msg.tags }}">{{ msg }}</h5>
+                            {% endfor %}
+                        </div>
+                        <div class="portlet-heading" style="padding: 10px">
+                            <form action="{% url 'all-lines' brand %}" method="GET" style="float: right">
+                                {% if plant_name %}
+                                    <div style="float: left; margin-right: 200px;">
+                                        <div class="add-element">
+                                            {{ plant_name }} - {{ selected_date }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="remove-element" style="float: right; margin-left: 20px;" >
+                                    <select class="btn btn-white" id="depot_id" name="depot_code" class="">
+                                        <option value="">Select Unit</option>
+                                        {% for d in business_unit_details %}
+                                            <option value="{{ d.code }}"
+                                                    {% if depot_code == d.code %}
+                                                    selected
+                                                    {% endif %}>
+                                                {{ d.code }} - {{ d.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-white" value="Submit" style="border-radius: 5px;"/>
+                                </div>
+                                <div class="input-append date form_datetime"  style="float: right">
+                                    <input type="text" name="date" id="id_date" size="16" placeholder="Select Plan Date"
+                                           class="form-control" required autocomplete="off"
+                                           value="{% if plan_date %}{{ plan_date }}{% endif %}"/>
+                                </div>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="portlet-body">
+                            {% if plans == "No Data" %}
+                                <h4>Plan is not available for the selected date. </h4>
+                            {% elif plans %}
+                                <p style="text-align: center">Live Performance Chart</p>
+                                <div id="example-table_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                                <div id="myDiv"> </div>
+                            {% else %}
+                                <h4>Please select Plan date and Branch. </h4>
+                            {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/plotly-latest.min.js' %}"></script>
+    <script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+    <link href="{% static 'css/jquery.datetimepicker.css' %}" rel="stylesheet">
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var today = new Date();
+            $("input#id_date").datetimepicker({
+                autoclose: true,
+                showMeridian: true,
+                maxDate: today,
+            });
+        });
+    </script>
+    <script>
+        {% autoescape off %}
+            var plans_details = {{ plans }};
+        {% endautoescape %}
+        var target = [];
+        var actual = [];
+        var x_axis = [];
+        for(count = 0; count < plans_details.length; count++){
+            target.push(plans_details[count].target);
+            actual.push(plans_details[count].actual);
+            x_axis.push(plans_details[count].machine);
+        }
+        var trace2 = {
+            x: x_axis,
+            y: actual,
+            text: actual,
+            textposition: 'auto',
+            hoverinfo: 'none',
+            name: 'Achieved',
+            type: 'bar',
+        };
+        var trace1 = {
+            x: x_axis,
+            y: target,
+            text: target,
+            textposition: 'auto',
+            hoverinfo: 'none',
+            name: 'Taret',
+            type: 'bar'
+        };
+        var data = [trace1, trace2];
+
+        var layout = {barmode: 'group'};
+
+        Plotly.newPlot('myDiv', data, layout);
+    </script>
+{% endblock extra_js %}
